@@ -10,14 +10,14 @@ int main(int argc, char** argv)
         return -1;
     }
 
-    char *outText;
+    char* outText = 0;
     tesseract::TessBaseAPI *api = new tesseract::TessBaseAPI();
     if (api->Init(NULL, "eng")) {
         std::cout << "could not initialize tesseract" << std::endl; 
         return -1; 
     }
 
-    Pix *image = pixRead(argv[1]);
+    Pix* image = pixRead(argv[1]);
     api->SetImage(image);
     
     outText = api->GetUTF8Text();
