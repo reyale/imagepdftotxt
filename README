@@ -4,7 +4,7 @@ Image PDF to Text:
 
 Author: Alex Reynolds
 
-This package is designed to convert PDFs stored as image pdfs (no text) to text using optical character recognition.  The project was created  for the conversion of "trapped" Jersey City municipal data.  An examples of the data can be found under: $(PROJECT_ROOT)/budget-2008.  More examples can be found at: $(PROJECT_ROOT)/budget-2008
+This package is designed to convert PDFs stored as image pdfs (no text) to text using optical character recognition.  The project was created  for the conversion of "trapped" Jersey City municipal data.  An examples of the data can be found under: $(PROJECT_ROOT)/budget-2008. 
 
 Example output of the 14th page of $(PROJECT_ROOT)/budget-2008/2008_intro.pdf (Jersey City's 2008 budget) can be seen at: $(PROJECT_ROOT)/example
 
