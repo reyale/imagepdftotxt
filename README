@@ -1,0 +1,85 @@
+==================
+Image PDF to Text:
+==================
+
+Author: Alex Reynolds
+
+This package is designed to convert PDFs stored as image pdfs (no text) to text using optical character recognition.  The project was created  for the conversion of "trapped" Jersey City municipal data.  An examples of the data can be found under: $(PROJECT_ROOT)/budget-2008.  More examples can be found at: $(PROJECT_ROOT)/budget-2008
+
+Example output of the 14th page of $(PROJECT_ROOT)/budget-2008/2008_intro.pdf (Jersey City's 2008 budget) can be seen at: $(PROJECT_ROOT)/example
+
+=============
+REQUIREMENTS:
+=============
+  make - should be installed on all linux distributions
+
+  libtesseract: https://code.google.com/p/tesseract-ocr/ 
+	libtesseract-dev		
+	libtesseract3		
+  
+  tesseract requires:
+	libwebp
+ 	libtiff
+	libjpeg
+	libgif
+	libpng
+	pthreads
+	libz
+
+  poppler-utils - command line utility that converts pdf to images (with high quality)
+
+  Python - (tested with python 2.7) - drives the convert script
+
+  Python PIL - for image manipulation	
+
+=====
+BUILD
+=====
+
+Simply change directory to the project root and make.
+
+> cd $(PROJECT_ROOT)
+> make
+
+============
+EXAMPLE RUN:
+============
+        #below will print help and then convert the example pdf file with the given policy (rotates the pages #>1)
+        ./convert --help 
+	./convert -f budget-2008/2008_intro.pdf -p ./config/budget_policy.csv
+
+=====
+TODO:
+=====
+
+Train the tesseract library for better output.
+  -Set up an expected output set.
+  -create scripts for training (so the training can be replicated)
+  -build in a training option in to the tesseract application 
+Scripts to mine csv data out of the results (this should be a different project).
+
++++++++++
+ License
++++++++++
+
+The MIT License (MIT)
+
+Copyright (c) [2014] [Alex Reynolds]
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.

@@ -1,0 +1,84 @@
+#!/usr/bin/python
+
+import os
+import shutil
+import uuid
+import argparse
+import glob
+import csv
+from subprocess import call
+from PIL import Image
+
+_script_dir = os.path.dirname(os.path.realpath(__file__))
+
+_pdf_to_png_command = "pdftoppm -rx 300 -ry 300 -png %s %s" #requires: sudo apt-get install poppler-utils
+_tesseract_command = _script_dir + '/tesseract %s'
+
+def apply_policy(input_file, policy):
+  def get_page_number(input_file):
+    return int(input_file.split('.')[0].split('-')[1])
+  page_number = get_page_number(input_file)
+  policy_csv = csv.DictReader(open(policy, 'r'))
+  for line in policy_csv:
+    if eval(str(page_number) + line['page_number']):
+      function = line['command'].split(' ')[0]
+      args = int(line['command'].split(' ')[1])
+      im = Image.open(input_file)
+      command = 'im.' + function + '(' + str(args) + ')'
+      im = eval(command)
+      im.save(input_file)
+
+def run_conversion(pdf_file, policy, output_directory):
+  if not os.path.exists(pdf_file):
+    print pdf_file + ' does not exist'
+    return
+
+  if not os.path.exists(output_directory):
+    print 'output directory: ' + output_directory + ' does not exist'
+    return
+
+  working_directory = '/var/tmp/%i' % uuid.uuid4()
+  os.mkdir(working_directory)
+  shutil.copy(pdf_file, working_directory)
+
+  #extract the images to a standard naming convention
+  pdf_file_basename = os.path.basename(pdf_file)
+  output_pattern = working_directory + '/' + pdf_file_basename.split('.')[0]
+  cmd = _pdf_to_png_command % (working_directory + '/' + pdf_file_basename, output_pattern) 
+  rc = call(cmd.split(' '))
+  if rc != 0:
+    print 'failed convert'
+    shutil.rmtree(working_directory)
+    return
+
+  files_to_convert = glob.glob(output_pattern + '*png')
+  if not files_to_convert:
+    print 'There were no files for tesseract to convert'
+    shutil.rmtree(working_directory)
+    return
+
+  #apply policy
+  if policy:
+    for input_file in files_to_convert:
+      apply_policy(input_file, policy)
+
+  #run tesseract
+  for input_file in files_to_convert:
+    output_file = output_directory + '/' + os.path.basename(input_file).split('.')[0] + '.txt'
+    output_file = open(output_file, 'w')
+    cmd = _tesseract_command % (input_file)
+    rc = call(cmd.split(' '), stdout=output_file)
+    output_file.close()
+    if rc != 0:
+      print 'Failed to convert: ' + input_file
+
+  shutil.rmtree(working_directory)
+  print 'Conversion complete'
+
+parser = argparse.ArgumentParser(description='convert JC budget')
+parser.add_argument('-pdffile', '-f', dest='pdf_file', required=True, help='the PDF file to convert')
+parser.add_argument('-policy', '-p', required=False, help='a policy csv file that lets you do special actions to a page')
+parser.add_argument('-output-dir', '-o', dest='output_dir', default='./', help='Directory for the output')
+args = parser.parse_args()
+
+run_conversion(args.pdf_file, args.policy, args.output_dir)
