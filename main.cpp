@@ -3,8 +3,6 @@
 #include <tesseract/baseapi.h>
 #include <leptonica/allheaders.h>
 
-using namespace std;
-
 int main(int argc, char** argv)
 {
     if (argc < 2) {
@@ -15,7 +13,7 @@ int main(int argc, char** argv)
     char *outText;
     tesseract::TessBaseAPI *api = new tesseract::TessBaseAPI();
     if (api->Init(NULL, "eng")) {
-        cout << "could not initialize tesseract" << endl; 
+        std::cout << "could not initialize tesseract" << std::endl; 
         return -1; 
     }
 
@@ -25,7 +23,6 @@ int main(int argc, char** argv)
     outText = api->GetUTF8Text();
     printf("%s", outText);
 
-    // Destroy used object and release memory
     api->End();
     delete [] outText;
     pixDestroy(&image);
