@@ -57,6 +57,7 @@ Train the tesseract library for better output.
   -create scripts for training (so the training can be replicated)
   -build in a training option in to the tesseract application 
 Scripts to mine csv data out of the results (this should be a different project).
+Add unit tests
 
 +++++++++
  License

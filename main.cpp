@@ -11,7 +11,7 @@ int main(int argc, char** argv)
     }
 
     char* outText = 0;
-    tesseract::TessBaseAPI *api = new tesseract::TessBaseAPI();
+    tesseract::TessBaseAPI* api = new tesseract::TessBaseAPI();
     if (api->Init(NULL, "eng")) {
         std::cout << "could not initialize tesseract" << std::endl; 
         return -1; 

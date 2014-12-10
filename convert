@@ -75,7 +75,7 @@ def run_conversion(pdf_file, policy, output_directory):
   shutil.rmtree(working_directory)
   print 'Conversion complete'
 
-parser = argparse.ArgumentParser(description='convert JC budget')
+parser = argparse.ArgumentParser(description='convert image only pdf to text')
 parser.add_argument('-pdffile', '-f', dest='pdf_file', required=True, help='the PDF file to convert')
 parser.add_argument('-policy', '-p', required=False, help='a policy csv file that lets you do special actions to a page')
 parser.add_argument('-output-dir', '-o', dest='output_dir', default='./', help='Directory for the output')
