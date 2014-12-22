@@ -11,8 +11,8 @@ from PIL import Image
 
 _script_dir = os.path.dirname(os.path.realpath(__file__))
 
-_pdf_to_png_command = "pdftoppm -rx 300 -ry 300 -png %s %s" #requires: sudo apt-get install poppler-utils
-_tesseract_command = _script_dir + '/tesseract %s'
+_pdf_to_png_command = "pdftoppm -r 500 -rx 500 -ry 500 -jpeg %s %s" #requires: sudo apt-get install poppler-utils
+_tesseract_command = _script_dir + '/tesseract --input %s'
 
 def apply_policy(input_file, policy):
   def get_page_number(input_file):
@@ -51,7 +51,7 @@ def run_conversion(pdf_file, policy, output_directory):
     shutil.rmtree(working_directory)
     return
 
-  files_to_convert = glob.glob(output_pattern + '*png')
+  files_to_convert = glob.glob(output_pattern + '*jpg')
   if not files_to_convert:
     print 'There were no files for tesseract to convert'
     shutil.rmtree(working_directory)
