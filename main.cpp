@@ -8,6 +8,18 @@
 
 namespace po = boost::program_options;
 
+void set_tess_variables(tesseract::TessBaseAPI* api, const std::vector<std::string> & variables) {
+  for(size_t i = 0; i < variables.size(); ++i) {
+    std::string kv = variables[i];
+    size_t pos = kv.find(":");
+    if(pos == std::string::npos)
+      throw std::runtime_error("Invalid variable, please delineate by a semi-colon: " + kv);
+    std::string key = kv.substr(0, pos);
+    std::string value = kv.substr(pos + 1, kv.size() - pos);
+    api->SetVariable(key.c_str(), value.c_str());
+  }
+}
+
 int main(int argc, char** argv)
 {
    po::options_description desc("Allowed options");
@@ -16,11 +28,12 @@ int main(int argc, char** argv)
     ("input", po::value<std::string>(), "required - input image file")
     ("language", po::value<std::string>(), "default is NULL")
     ("output", po::value<std::string>(), "default is std out")
+    ("tessopt", po::value<std::vector<std::string> >()->multitoken(), "tesseract options <key>:<value>");
    ;
 
-    po::variables_map vm;
-    po::store(po::parse_command_line(argc, argv, desc), vm);
-    po::notify(vm);   
+   po::variables_map vm;
+   po::store(po::parse_command_line(argc, argv, desc), vm);
+   po::notify(vm);   
 
    if(vm.count("input") <= 0) {
      std::cout << "Please provide input file" << std::endl;
@@ -40,6 +53,9 @@ int main(int argc, char** argv)
      std::cout << "Failed to initialize tesseract" << std::endl;
      return -1;
    }
+ 
+   if(vm.count("tessopt"))
+     set_tess_variables(api, vm["tessopt"].as<std::vector< std::string> >());
 
    Pix* image = pixRead(vm["input"].as<std::string>().c_str());
    if(!image) {
