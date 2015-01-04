@@ -32,6 +32,8 @@ REQUIREMENTS:
 
   Python PIL - for image manipulation	
 
+  BOOST 1.46 - semi-standard package of c++ libraries, used for command line management
+
 =====
 BUILD
 =====
@@ -47,6 +49,16 @@ EXAMPLE RUN:
         #below will print help and then convert the example pdf file with the given policy (rotates the pages #>1)
         ./convert --help 
 	./convert -f budget-2008/2008_intro.pdf -p ./config/budget_policy.csv
+
+====
+FAQ:
+====
+
+Q: My conversions are failing for some files, but not all and it seems kind of random?
+A: Tesseract seems to have some silent memory requirements, when it meets resource constraints it bails.  I did my development in a VM and when I increased the memory allocation to the VM these issues went away.
+
+Q: Why JPG?
+A: PNG might be better for text, but tesseract seems to be acting better with JPG.
 
 =====
 TODO:

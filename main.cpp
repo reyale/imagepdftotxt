@@ -16,7 +16,8 @@ void set_tess_variables(tesseract::TessBaseAPI* api, const std::vector<std::stri
       throw std::runtime_error("Invalid variable, please delineate by a semi-colon: " + kv);
     std::string key = kv.substr(0, pos);
     std::string value = kv.substr(pos + 1, kv.size() - pos);
-    api->SetVariable(key.c_str(), value.c_str());
+    if(!api->SetVariable(key.c_str(), value.c_str()))
+      throw std::runtime_error("Failed to set: " + key + " " + value);
   }
 }
 
@@ -28,7 +29,8 @@ int main(int argc, char** argv)
     ("input", po::value<std::string>(), "required - input image file")
     ("language", po::value<std::string>(), "default is NULL")
     ("output", po::value<std::string>(), "default is std out")
-    ("tessopt", po::value<std::vector<std::string> >()->multitoken(), "tesseract options <key>:<value>");
+    ("tessopt", po::value<std::vector<std::string> >()->multitoken(), "tesseract options <key>:<value>")
+    ("tesssegmode", po::value<int>()->default_value(tesseract::PSM_SINGLE_BLOCK), "tesseract page segmentation mode");
    ;
 
    po::variables_map vm;
@@ -56,6 +58,13 @@ int main(int argc, char** argv)
  
    if(vm.count("tessopt"))
      set_tess_variables(api, vm["tessopt"].as<std::vector< std::string> >());
+
+   if(vm.count("tesssegmode")) {
+     tesseract::PageSegMode mode = (tesseract::PageSegMode)(vm["tesssegmode"].as<int>());
+     if(mode < 0 || mode > tesseract::PSM_COUNT)
+       throw std::runtime_error("Invalid tess segmentation mode");
+     api->SetPageSegMode(mode);
+   }
 
    Pix* image = pixRead(vm["input"].as<std::string>().c_str());
    if(!image) {

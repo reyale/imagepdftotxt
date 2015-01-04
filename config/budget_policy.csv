@@ -1,2 +1,2 @@
-page_number,command
->1,rotate 90
+page_number,command,segmode
+>1,rotate 90,3

@@ -11,12 +11,13 @@ from PIL import Image
 
 _script_dir = os.path.dirname(os.path.realpath(__file__))
 
-_pdf_to_png_command = "pdftoppm -r 500 -rx 500 -ry 500 -jpeg %s %s" #requires: sudo apt-get install poppler-utils
-_tesseract_command = _script_dir + '/tesseract --input %s'
+_pdf_to_png_command = "pdftoppm -r 300 -rx 300 -ry 300 -jpeg %s %s" #requires: sudo apt-get install poppler-utils
+_tesseract_command = _script_dir + '/tesseract --input %s --tesssegmode %s'
+
+def get_page_number(input_file):
+    return int(input_file.split('.')[0].split('-')[1])
 
 def apply_policy(input_file, policy):
-  def get_page_number(input_file):
-    return int(input_file.split('.')[0].split('-')[1])
   page_number = get_page_number(input_file)
   policy_csv = csv.DictReader(open(policy, 'r'))
   for line in policy_csv:
@@ -27,6 +28,19 @@ def apply_policy(input_file, policy):
       command = 'im.' + function + '(' + str(args) + ')'
       im = eval(command)
       im.save(input_file)
+
+def get_segmode(input_file, policy):
+  page_number = get_page_number(input_file)
+  segmode = '6'
+  if not policy:
+    return segmode 
+
+  policy_csv = csv.DictReader(open(policy, 'r'))
+  for line in policy_csv:
+    if eval(str(page_number) + line['page_number']):
+      if 'segmode' in line:
+        segmode = str(line['segmode']) 
+  return segmode
 
 def run_conversion(pdf_file, policy, output_directory):
   if not os.path.exists(pdf_file):
@@ -66,7 +80,9 @@ def run_conversion(pdf_file, policy, output_directory):
   for input_file in files_to_convert:
     output_file = output_directory + '/' + os.path.basename(input_file).split('.')[0] + '.txt'
     output_file = open(output_file, 'w')
-    cmd = _tesseract_command % (input_file)
+    segmode = get_segmode(input_file, policy)
+    cmd = _tesseract_command % (input_file, segmode)
+    print cmd
     rc = call(cmd.split(' '), stdout=output_file)
     output_file.close()
     if rc != 0:
